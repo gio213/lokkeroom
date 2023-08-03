@@ -1,0 +1,51 @@
+</html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Signup</title>
+</head>
+
+<body>
+    <nav>
+        <a href="/">Hello</a>
+        <ul>
+            <li><a href="/login">login</a></li>
+            <li><a href="/signup" class="btn">signup</a></li>
+        </ul>
+    </nav>
+    <form action="" method="post">
+        <h2>Sign up </h2>
+        <p style="color: red;">
+            <%= errorEmailMessage %>
+                <%= errorUsernameMessage %>
+                    <%= errorPasswordMessage %>
+                        <%= errorPasswordMatchMessage %>
+                            <%= errorField %>
+        </p>
+        <p style="color: green;">
+            <%= userRegistered %>
+        </p>
+        <label for="text">Username</label>
+        <input type="text" name="username">
+        <label for="email">Email</label>
+        <input type="email" name="email">
+        <div class="mail-error">
+        </div>
+        <label for="password">Password</label>
+        <input type="password" name="password">
+        <input type="password" name="passwordConfirm" placeholder="Confrim password">
+        <div class="password error"></div>
+        Select Image File to Upload:
+        <input type="file" name="image">
+        <button type="submit">Sign Up</button>
+
+
+    </form>
+
+</body>
+
+</html>

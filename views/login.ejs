@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Login Page</title>
+</head>
+
+<body>
+    <nav>
+        <a href="/">Hello</a>
+        <ul>
+            <li><a href="/login">login</a></li>
+            <li><a href="/signup" class="btn">signup</a></li>
+        </ul>
+    </nav>
+    <form action="login" method="post">
+        <h2>Login Page</h2>
+        <p style="color: red;">
+            <%= errorField %>
+                <%= loginError %>
+
+        </p>
+        <label for="email">Email</label>
+        <input type="text" name="email">
+        <div class="mail error"></div>
+        <label for="password">Password</label>
+        <input type="password" name="password">
+        <div class="password error"></div>
+        <button type="submit">Login</button>
+    </form>
+
+</body>
+
+</html>
