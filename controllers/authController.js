@@ -1,13 +1,8 @@
 import dotenv from "dotenv";
-import bcrypt from "bcrypt";
 dotenv.config({ path: "./.env" });
-import db from "../dbConection.mjs";
-import jsonwebtoken from "jsonwebtoken";
-import cookieParser from "cookie-parser";
-import session from "express-session";
-import multer from "multer";
-
-const upload = multer({ dest: "static/uploads/" });
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import db from "../database/dbConection.js";
 
 const sign_get = async (req, res) => {
   res.render("signup.ejs");
@@ -17,8 +12,8 @@ const sign_post = async (req, res, next) => {
   const { username, email, password, passwordConfirm } = req.body;
 
   if (!username || !email || !password || !passwordConfirm) {
-    return res.render("signup.ejs", console.log("Please fill all the fields"), {
-      message: "Please fill all the fields",
+    res.status(401).render("signup.ejs", {
+      errorField: "Please fill all the fields",
     });
   } else {
     db.query(
@@ -37,16 +32,17 @@ const sign_post = async (req, res, next) => {
             errorPasswordMatchMessage: "Passwords do not match",
           });
         }
-        "select username from lokkeroom_db.users where username = ?",
+        "select username from lokkeroom_db.users WHERE username = ?",
           [username],
           async (error, results) => {
             if (error) {
               console.log(error);
             }
             if (results.length > 0) {
-              res.status(1062).render("signup.ejs", {
+              res.status(401).render("signup.ejs", {
                 errorUsernameMessage: "That username is already in use",
               });
+              console.log("That username is already in use");
             }
           };
 
@@ -100,14 +96,14 @@ const login_post = async (req, res) => {
           });
         } else {
           const user = {
-            id: results[0].id,
+            user_id: results[0].user_id,
             username: results[0].username,
             email: results[0].email,
+            role: results[0].admin,
+            created_at: results[0].created_at,
           };
-          res.status(200).render("lobby.ejs", {
-            message: "User logged in",
-            user: user,
-          });
+          console.log(results[0].user_id);
+          res.status(200).redirect("/api/lobby?user=" + JSON.stringify(user));
         }
       }
     );
@@ -115,11 +111,29 @@ const login_post = async (req, res) => {
 };
 
 const lobby_get = async (req, res) => {
-  res.render("lobby.ejs");
+  const user = JSON.parse(req.query.user);
+  res.render("lobby.ejs", {
+    user: user,
+  });
 };
 
 const home_get = async (req, res) => {
   res.render("home.ejs");
 };
+const home_redirect = async (req, res) => {
+  res.redirect("/api");
+};
+const logout_get = async (req, res) => {
+  res.redirect("/api");
+};
 
-export { sign_get, sign_post, login_get, login_post, lobby_get, home_get };
+export {
+  sign_get,
+  sign_post,
+  login_get,
+  login_post,
+  lobby_get,
+  home_get,
+  home_redirect,
+  logout_get,
+};

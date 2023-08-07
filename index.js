@@ -1,10 +1,11 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import authRoutes from "./routes/aouthRoutes.mjs";
-import db from "./dbConection.mjs";
+import authRoutes from "./routes/aouthRoutes.js";
 import session from "express-session";
+const port = process.env.PORT;
 
 const app = express();
+
 app.use("/static", express.static("public"));
 
 const setMessageMiddleware = (req, res, next) => {
@@ -16,6 +17,7 @@ const setMessageMiddleware = (req, res, next) => {
   res.locals.errorField = "";
   res.locals.userRegistered = "";
   res.locals.loginError = "";
+  res.locals.userLogin = "";
   next();
 };
 
@@ -43,6 +45,10 @@ app.use(
 app.set("view engine ", "ejs");
 
 // server listen
-app.listen(3000, () => {
-  console.log("Server started on Port 3000");
+app.listen(port, (error) => {
+  if (!error) {
+    console.log(`Server is successfully running at port ${port} `);
+  } else {
+    console.log("Error occurred, server can't start", error);
+  }
 });
