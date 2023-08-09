@@ -14,7 +14,7 @@
 
 
         <ul>
-            <li><a href="/api/logout">Log out</a></li>
+            <li><a href="/logout">Log out</a></li>
             <li><a href="/">Home</a></li>
 
         </ul>
@@ -31,26 +31,100 @@
 
         </div>
 
-        <div class="userInfor">
+        <div class=" userInfor">
             <div class="css-after-gradiant">
                 <img src="https://i.pravatar.cc/75" />
             </div>
-            <p>Welcome, <%= user.username %>!</p>
-            <p>ID: <%=user.user_id%>
+            <p id="userName"> </p>
+            <p id="email">
             </p>
+            <p id="userRole">
             </p>
-            <p>Email:<%= user.email %>
+            <p id="createdAt">
             </p>
-            <p>Role: <%= user.role %>
-            </p>
-            <p>created at:<%= user.created_at %>
-            </p>
+
 
 
 
         </div>
 
+
+
+
+
+
     </div>
+
+    <script>
+        /// enter press event
+        // const input = document.querySelector('input');
+        // input.addEventListener('keyup', function (e) {
+        //     if (e.keyCode === 13) {
+        //         e.preventDefault();
+        //         document.querySelector('form').submit();
+        //     }
+        // });
+        const userName = document.getElementById("userName");
+        const email = document.getElementById("email");
+        const userRole = document.getElementById("userRole");
+        const createdAt = document.getElementById("createdAt");
+
+
+
+        // get token from cookie
+        const getToken = () => {
+            const cookie = document.cookie.split(';');
+            const token = cookie[0].split('=')[1];
+            // get id from token
+            const id = token.split('.')[1];
+            const idValue = JSON.parse(atob(id)).id;
+            return idValue;
+        }
+        console.log(getToken());
+
+
+
+
+
+
+
+        (async () => {
+
+            const data = {
+                // id: 9
+                // get id  from cookie
+                id: getToken()
+
+
+            };
+
+
+            try {
+                const response = await fetch("/api/get-user", {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: { "Content-Type": "application/json" }
+                });
+
+                const jsonData = await response.json();
+                console.log(jsonData[0]);
+                userName.textContent = `Name: ${jsonData[0].username}`;
+                email.textContent = `Email: ${jsonData[0].email}`;
+                userRole.textContent = `Role: ${jsonData[0].role}`;
+                createdAt.textContent = `Created At: ${jsonData[0].created_at}`;
+
+
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        })();
+
+
+
+
+
+
+    </script>
 
 
 </body>

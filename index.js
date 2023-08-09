@@ -30,16 +30,9 @@ app.use(express.json());
 // define routes
 app.use("/", authRoutes);
 
-//set cookieparser and session and flash
+//set cookieparser and session
 app.use(cookieParser("secretStringForCookie"));
-app.use(
-  session({
-    secret: "secretStringForCookie",
-    resave: false,
-    saveUninitialized: false,
-    cookie: { maxAge: 60000 },
-  })
-);
+//
 
 // view engine setup
 app.set("view engine ", "ejs");

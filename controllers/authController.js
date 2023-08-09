@@ -3,6 +3,9 @@ dotenv.config({ path: "./.env" });
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import db from "../database/dbConection.js";
+import { json } from "express";
+import { generateJwt } from "../utils/generateJWT.js";
+import session from "express-session";
 
 const sign_get = async (req, res) => {
   res.render("signup.ejs");
@@ -99,11 +102,21 @@ const login_post = async (req, res) => {
             user_id: results[0].user_id,
             username: results[0].username,
             email: results[0].email,
-            role: results[0].admin,
+            role: results[0].role,
             created_at: results[0].created_at,
           };
-          console.log(results[0].user_id);
-          res.status(200).redirect("/api/lobby?user=" + JSON.stringify(user));
+          const token = generateJwt({ id: user.user_id });
+
+          // res.cookie("token", token, {
+          //   expires: new Date(Date.now() + 300000),
+          //   httpOnly: true,
+          // });
+          res.cookie("token", token, {
+            expires: new Date(Date.now() + 300000),
+            httpOnly: false,
+          });
+
+          res.status(200).redirect("/api/lobby");
         }
       }
     );
@@ -111,20 +124,40 @@ const login_post = async (req, res) => {
 };
 
 const lobby_get = async (req, res) => {
-  const user = JSON.parse(req.query.user);
+  // const user = JSON.parse(req.query.user);
   res.render("lobby.ejs", {
-    user: user,
+    // user: user,
   });
 };
+const lobby_post = async (req, res) => {
+  const user = JSON.parse(req.query.user);
+  const message = {
+    lobby_id: 1,
+    username: user.username,
+    user_id: user.user_id,
+    message_content: req.body.message,
+    created_at: new Date(),
+  };
+  db.query(
+    "INSERT INTO lokkeroom_db.messages SET ? ",
+    message,
+    (error, results) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(results);
+        res.status(200).redirect("/api/lobby?user=" + JSON.stringify(user));
+      }
+    }
+  );
+};
 
-const home_get = async (req, res) => {
+const home_get = async (req, res, next) => {
   res.render("home.ejs");
 };
-const home_redirect = async (req, res) => {
-  res.redirect("/api");
-};
+
 const logout_get = async (req, res) => {
-  res.redirect("/api");
+  res.redirect("/");
 };
 
 export {
@@ -134,6 +167,6 @@ export {
   login_post,
   lobby_get,
   home_get,
-  home_redirect,
   logout_get,
+  lobby_post,
 };
